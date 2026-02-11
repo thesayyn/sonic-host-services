@@ -1,0 +1,101 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm", "wheel", "pytest-runner"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sonic-host-services"
+requires-python = ">=3.11"
+dynamic = ["version"]
+description = "Python services which run in the SONiC host OS"
+license = "Apache-2.0"
+authors = [
+    { name = "SONiC Team", email = "linuxnetdev@microsoft.com" },
+]
+maintainers = [
+    { name = "Joe LeVeque", email = "jolevequ@microsoft.com" },
+]
+keywords = [
+    "SONiC",
+    "host",
+    "services",
+    "sonic",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: English",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.7",
+    "Topic :: System",
+]
+dependencies = [
+    "dbus-python",
+    "PyGObject",
+    "Jinja2>=2.10",
+    "psutil",
+    "pycairo==1.26.1",
+    "systemd-python",
+    # Required by Bazel rules_py, to build sdist-only wheels
+    "build",
+    "setuptools",
+
+    # Required by dbus-python and other dependencies that need meson at build time
+    "meson",
+    "meson-python",
+    "ninja",
+    "patchelf",
+    "wheel",
+
+    # Installed in sonic-slave.
+    # We need to comment them out whenever we lock uv
+    "sonic-py-common",
+    "sonic-utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/Azure/sonic-buildimage"
+
+[project.optional-dependencies]
+testing = [
+    "deepdiff>=6.2.2",
+    "parameterized",
+    "pyfakefs",
+    "pytest",
+    "pytest-cov",
+    "sonic-py-common",
+]
+
+[project.scripts]
+caclmgrd = "scripts.caclmgrd:main"
+hostcfgd = "scripts.hostcfgd:main"
+featured = "scripts.featured:main"
+aaastatsd = "scripts.aaastatsd:main"
+procdockerstatsd = "scripts.procdockerstatsd:main"
+determine-reboot-cause = "scripts.determine_reboot_cause:main"
+process-reboot-cause = "scripts.process_reboot_cause:main"
+check_platform = "scripts.check_platform:main"
+gnoi_shutdown_daemon = "scripts.gnoi_shutdown_daemon:main"
+sonic-host-server = "scripts.sonic_host_server:main"
+
+[tool.setuptools.package-dir]
+host_modules = 'host_modules'
+utils = 'utils'
+scripts = 'scripts'
+
+[tool.setuptools]
+script-files = [
+  # Not python, so can't fit in project.scripts.
+  "scripts/wait-for-sonic-core.sh",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["**/*_test.py"]
+
+# Override for uv to use with Bazel
+[tool.uv.sources]
+sonic-py-common = { path = "../sonic-buildimage/src/sonic-py-common" }
+sonic-utilities = { path = "../sonic-utilities" }

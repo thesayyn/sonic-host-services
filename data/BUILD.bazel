@@ -1,0 +1,41 @@
+load("@rules_deb//distroless:defs.bzl", "flatten")
+load("@tar.bzl", "mutate", "tar")
+
+tar(
+    name = "templates",
+    srcs = glob(["templates/*.j2"]),
+    mutate = mutate(
+        package_dir = "./usr/share/sonic/templates",
+        strip_prefix = package_name() + "/templates",
+    ),
+)
+
+tar(
+    name = "loose_files",
+    srcs = [
+        "org.sonic.hostservice.conf",
+    ],
+    mtree = [
+        "./etc/dbus-1/system.d/org.sonic.hostservice.conf type=file contents=$(location :org.sonic.hostservice.conf)",
+    ],
+)
+
+tar(
+    name = "systemd_services",
+    srcs = glob(["debian/**/*.service"]),
+    mutate = mutate(
+        package_dir = "./usr/lib/systemd/system",
+        strip_prefix = package_name() + "/debian",
+    ),
+)
+
+flatten(
+    name = "sonic-host-services-data_all_pkg",
+    deduplicate = True,
+    tars = [
+        ":templates",
+        ":loose_files",
+        ":systemd_services",
+    ],
+    visibility = ["//visibility:public"],
+)

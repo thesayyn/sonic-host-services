@@ -1,0 +1,91 @@
+load("@sonic-build-infra//python:site_packages.bzl", "site_packages")
+load("@aspect_rules_py//py:defs.bzl", "py_library", "py_test")
+load("@tar.bzl", "tar", "mutate")
+load("@rules_deb//distroless:defs.bzl", "flatten")
+load("@rules_python//python:packaging.bzl", "py_wheel")
+
+# TODO(bazel-ready): Add autoformatting with buildifier.
+# TODO(bazel-ready): Make tests work.
+# TODO(bazel-ready): Make sure the wheel building works and is equivalent.
+
+filegroup(
+  name = "all_srcs",
+  srcs = glob([
+    "host_modules/**/*.py",
+    "utils/**/*.py",
+    # Some scripts are shell scripts
+    "scripts/*",
+  ], exclude = [
+    "setup.py",
+  ]),
+)
+
+py_library(
+  name = "all_deps",
+  deps = [
+      # PyPi dependencies.
+      "@sonic_host_services_pip//jinja2",
+      "@sonic_host_services_pip//psutil",
+      "@sonic_host_services_pip//pycairo",
+      "@sonic_host_services_pip//build",
+      "@sonic_host_services_pip//setuptools",
+
+      # SONiC dependencies.
+      "@sonic_py_common//:sonic-py-common",
+      "@sonic_utilities//:sonic-utilities",
+
+      # TODO(bazel-ready): Implement support for meson dependencies.
+      # These dependencies are only distributed as sdists, and rely on mason to build.
+      # Instead of trying to migrate its build system to Bazel,
+      # for now we just take the prebuilt one from the bookworm debian repository.
+      # Of course, some tests won't pass until we add support for these dependencies.
+      # "@sonic_host_services_pip//dbus_python",
+      # "@sonic_host_services_pip//pygobject",
+      # "@sonic_host_services_pip//systemd_python",
+  ],
+
+)
+
+# TODO(bazel-ready): Reduce total number of targets when tar.bzl can support multimutations,
+# so site_packages can put both sources and third party dependencies in the right places.
+
+py_library(
+  name = "sonic-host-services",
+  srcs = [":all_srcs"],
+  deps = [":all_deps"],
+  imports = ["."],
+  visibility = ["//visibility:public"],
+)
+
+tar(
+    name = "sdist",
+    srcs = ["all_srcs"],
+    mutate = mutate(
+        package_dir = "./usr/lib/python3/dist-packages",
+        strip_prefix = package_name(),
+    ),
+    visibility = ["//visibility:public"],
+)
+
+site_packages(
+  name = "deps_dist",
+  srcs = [":all_deps"],
+  mutate = mutate(
+      package_dir = "./usr/lib/python3/dist-packages",
+      strip_prefix = "install/lib/python3.11/site-packages",
+  ),
+  visibility = ["//visibility:public"],
+)
+
+flatten(
+  name = "dist",
+  tars = [
+      ":sdist",
+      ":deps_dist",
+      "@bookworm//python3-dbus:data",
+      "@bookworm//python3-gi:data",
+      "@bookworm//python3-systemd:data",
+  ],
+  deduplicate = True,
+  visibility = ["//visibility:public"],
+)
