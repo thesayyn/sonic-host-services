@@ -1,4 +1,8 @@
-module(name = "sonic-host-services")
+# Keep bazel_compatibility in sync with sonic-buildimage's .bazelversion.
+module(
+    name = "sonic-host-services",
+    bazel_compatibility = [">=8.5.1", "<=8.5.1"],
+)
 
 bazel_dep(name = "tar.bzl", version = "0.8.1")
 bazel_dep(name = "gazelle", version = "0.47.0")
