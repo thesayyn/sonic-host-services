@@ -57,31 +57,16 @@ py_library(
   visibility = ["//visibility:public"],
 )
 
-tar(
-    name = "sdist",
-    srcs = ["all_srcs"],
-    mutate = mutate(
-        package_dir = "./usr/lib/python3/dist-packages",
-        strip_prefix = package_name(),
-    ),
-    visibility = ["//visibility:public"],
-)
-
 site_packages(
-  name = "deps_dist",
-  srcs = [":all_deps"],
-  mutate = mutate(
-      package_dir = "./usr/lib/python3/dist-packages",
-      strip_prefix = "install/lib/python3.11/site-packages",
-  ),
-  visibility = ["//visibility:public"],
+    name = "py_dist",
+    srcs = ["sonic-host-services"],
+    visibility = ["//visibility:public"],
 )
 
 flatten(
   name = "dist",
   tars = [
-      ":sdist",
-      ":deps_dist",
+      ":py_dist",
       "@bookworm//python3-dbus:data",
       "@bookworm//python3-gi:data",
       "@bookworm//python3-systemd:data",

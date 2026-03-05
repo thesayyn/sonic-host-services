@@ -5,6 +5,11 @@ module(
 )
 
 bazel_dep(name = "tar.bzl", version = "0.8.1")
+git_override(
+    module_name = "tar.bzl",
+    commit = "9b76e660363ab2465d89d3aadbbc1f7afa02e65c",
+    remote = "https://github.com/bazel-contrib/tar.bzl",
+)
 bazel_dep(name = "gazelle", version = "0.47.0")
 bazel_dep(name = "rules_multitool", version = "1.11.1")
 bazel_dep(name = "rules_python", version = "1.7.0")
@@ -102,12 +107,6 @@ use_repo(apt, "bookworm")
 
 # TODO(bazel-ready): Needed to fully resolve sonic-repositories, sonic_config_engine, and sonic_yang_mgmt.
 # Remove when we have a proper registry.
-
-bazel_dep(name = "sonic-bazel-common", version = "0.0.0", repo_name = "sonic_bazel_common")
-local_path_override(
-  module_name = "sonic-bazel-common",
-  path = "../sonic-buildimage/tools/sonic-bazel-common",
-)
 
 bazel_dep(name = "libyang3", version = "3.12.2")
 local_path_override(
