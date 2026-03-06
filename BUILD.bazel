@@ -57,6 +57,15 @@ py_library(
   visibility = ["//visibility:public"],
 )
 
+tar(
+    name = "sdist",
+    srcs = [":all_srcs"],
+    mutate = mutate(
+        package_dir = "/usr/lib/python3/dist-packages",
+    ),
+    visibility = ["//visibility:public"],
+)
+
 site_packages(
     name = "py_dist",
     srcs = ["sonic-host-services"],

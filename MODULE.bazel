@@ -4,12 +4,8 @@ module(
     bazel_compatibility = [">=8.5.1", "<=8.5.1"],
 )
 
-bazel_dep(name = "tar.bzl", version = "0.8.1")
-git_override(
-    module_name = "tar.bzl",
-    commit = "9b76e660363ab2465d89d3aadbbc1f7afa02e65c",
-    remote = "https://github.com/bazel-contrib/tar.bzl",
-)
+# TODO BL: montior this: https://github.com/bazelbuild/bazel-central-registry/pull/7810
+bazel_dep(name = "tar.bzl", version = "0.10.0)
 bazel_dep(name = "gazelle", version = "0.47.0")
 bazel_dep(name = "rules_multitool", version = "1.11.1")
 bazel_dep(name = "rules_python", version = "1.7.0")
