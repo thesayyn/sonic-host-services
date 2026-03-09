@@ -133,6 +133,12 @@ local_path_override(
     path = "../sonic-swss-common"
 )
 
+bazel_dep(name = "libnl3", version = "3.7.0")
+local_path_override(
+    module_name = "libnl3",
+    path = "../sonic-buildimage/src/libnl3",
+)
+
 bazel_dep(name = "sonic-yang-mgmt", version = "0.0.0", repo_name = "sonic_yang_mgmt")
 local_path_override(
     module_name = "sonic-yang-mgmt",
