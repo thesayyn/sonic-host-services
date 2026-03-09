@@ -1,4 +1,5 @@
 load("@sonic-build-infra//python:site_packages.bzl", "site_packages")
+load("@sonic-build-infra//tar:assert_tar.bzl", "assert_tar")
 load("@aspect_rules_py//py:defs.bzl", "py_library", "py_test")
 load("@tar.bzl", "tar", "mutate")
 load("@rules_deb//distroless:defs.bzl", "flatten")
@@ -61,7 +62,7 @@ tar(
     name = "sdist",
     srcs = [":all_srcs"],
     mutate = mutate(
-        package_dir = "/usr/lib/python3/dist-packages",
+        package_dir = "./usr/lib/python3/dist-packages",
     ),
     visibility = ["//visibility:public"],
 )
@@ -69,7 +70,6 @@ tar(
 site_packages(
     name = "py_dist",
     srcs = ["sonic-host-services"],
-    visibility = ["//visibility:public"],
 )
 
 flatten(
@@ -82,4 +82,16 @@ flatten(
   ],
   deduplicate = True,
   visibility = ["//visibility:public"],
+)
+
+assert_tar(
+    name = "sdist_test",
+    tar = ":sdist",
+    expected = "testdata/sdist.expected.txt",
+)
+
+assert_tar(
+    name = "dist_test",
+    tar = ":dist",
+    expected = "testdata/dist.expected.txt",
 )
