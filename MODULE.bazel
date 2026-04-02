@@ -104,8 +104,6 @@ bazel_dep(name = "libyang3_py3", version = "3.1.0")
 
 bazel_dep(name = "sonic-py-swsssdk", version = "0.0.0", repo_name = "sonic_py_swsssdk")
 
-bazel_dep(name = "sonic-swss-common", version = "0.0.0", repo_name = "sonic_swss_common")
-
 bazel_dep(name = "libnl3", version = "3.7.0")
 
 # TODO(bazel-ready): replace with new version of rules_m4 when this merges:
@@ -120,4 +118,3 @@ bazel_dep(name = "sonic-yang-mgmt", version = "0.0.0", repo_name = "sonic_yang_m
 
 bazel_dep(name = "sonic-config-engine", version = "0.0.0", repo_name = "sonic_config_engine")
 
-bazel_dep(name = "sonic-platform-common", version = "0.0.0", repo_name = "sonic_platform_common")
